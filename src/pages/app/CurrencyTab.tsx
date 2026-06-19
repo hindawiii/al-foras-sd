@@ -3,36 +3,33 @@ import { RefreshCw, TrendingUp, TrendingDown, Coins, Gem, Bitcoin } from "lucide
 import { useLiveRates, enrichCurrencies } from "@/hooks/useLiveRates";
 import { useCryptoGold } from "@/hooks/useCryptoGold";
 import { FinanceToolsHeader } from "@/components/foras/FinanceToolsHeader";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 export const CurrencyTab = () => {
-  const { t, lang, dir } = useLanguage();
-  const isRtl = dir === "rtl";
   const { rates, updatedAt, loading, error } = useLiveRates();
   const { crypto, gold, goldPricePerGram, updatedAt: cgUpdatedAt, loading: cgLoading } = useCryptoGold();
   const list = enrichCurrencies(rates);
   const lastUpdated = [updatedAt, cgUpdatedAt].filter(Boolean).sort((a, b) => (b!.getTime() - a!.getTime()))[0] ?? null;
 
   return (
-    <div className="space-y-4 pb-32" dir={dir}>
+    <div className="space-y-4 pb-32">
       <FinanceToolsHeader />
 
       {/* Hero header — Currency & Gold Hub */}
       <div className="relative overflow-hidden rounded-3xl border border-primary/30 bg-card-gradient p-5 shadow-luxe">
         <div className="absolute -top-12 -left-12 w-48 h-48 bg-primary/15 rounded-full blur-3xl" />
         <div className="relative flex items-start justify-between gap-3">
-          <div className={`flex-1 ${isRtl ? "text-right" : "text-left"}`}>
-            <h1 className={`font-display text-2xl text-gold-gradient flex items-center gap-2 ${isRtl ? "justify-end" : "justify-start"}`}>
+          <div className="text-right flex-1">
+            <h1 className="font-display text-2xl text-gold-gradient flex items-center gap-2 justify-end">
               <Coins className="w-6 h-6 text-primary" />
-              {t("currencyHubTitle")}
+              مركز العملات والذهب
             </h1>
             <p className="text-xs text-muted-foreground mt-1">
-              {t("currencyHubSubtitle")}
+              عملات عالمية ومحلية، الذهب، والعملات الرقمية في مكان واحد
             </p>
             <p className="text-[11px] text-muted-foreground mt-1.5">
-              {t("updatedAtLabel")}:{" "}
+              آخر تحديث:{" "}
               {lastUpdated
-                ? lastUpdated.toLocaleTimeString(lang === "ar" ? "ar-EG" : "en-US")
+                ? lastUpdated.toLocaleTimeString("ar-EG")
                 : "..."}
             </p>
           </div>
@@ -44,8 +41,8 @@ export const CurrencyTab = () => {
           <div className="relative mt-4 flex items-center justify-between rounded-2xl bg-background/40 border border-primary/20 px-4 py-3">
             <div className="flex items-center gap-2">
               <Gem className="w-4 h-4 text-primary" />
-              <div className={isRtl ? "text-right" : "text-left"}>
-                <p className="text-[11px] text-muted-foreground">{t("goldPrice24K")}</p>
+              <div className="text-right">
+                <p className="text-[11px] text-muted-foreground">سعر الذهب (24K)</p>
                 <p className="text-[10px] text-muted-foreground" dir="ltr">
                   {goldPricePerGram ? `${goldPricePerGram.toFixed(2)} USD / g` : "..."}
                 </p>
@@ -72,9 +69,9 @@ export const CurrencyTab = () => {
       )}
 
       {/* Fiat grid */}
-      <h2 className={`font-display text-base text-foreground/90 flex items-center gap-2 pt-1 ${isRtl ? "justify-end" : "justify-start"}`}>
+      <h2 className="font-display text-base text-foreground/90 flex items-center gap-2 justify-end pt-1">
         <Coins className="w-4 h-4 text-primary" />
-        {t("fiatCurrencies")}
+        العملات النقدية
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {list.map((c, i) => {
@@ -94,9 +91,9 @@ export const CurrencyTab = () => {
                 </span>
               </div>
               <p className="font-bold text-primary text-sm">{c.code}</p>
-              <p className="text-[10px] text-muted-foreground truncate">{lang === "ar" ? c.name : (c.nameEn || c.name)}</p>
+              <p className="text-[10px] text-muted-foreground truncate">{c.name}</p>
               <div className="mt-2 pt-2 border-t border-border/40">
-                <p className="text-[10px] text-muted-foreground">{t("priceVsUSD")}</p>
+                <p className="text-[10px] text-muted-foreground">السعر مقابل USD</p>
                 <p className="font-display text-base text-foreground" dir="ltr">
                   {c.liveRate.toLocaleString("en-US", { maximumFractionDigits: 4 })}
                   <span className="text-[10px] text-muted-foreground mr-1">{c.symbol}</span>
@@ -108,9 +105,9 @@ export const CurrencyTab = () => {
       </div>
 
       {/* Crypto grid */}
-      <h2 className={`font-display text-base text-foreground/90 flex items-center gap-2 pt-3 ${isRtl ? "justify-end" : "justify-start"}`}>
+      <h2 className="font-display text-base text-foreground/90 flex items-center gap-2 justify-end pt-3">
         <Bitcoin className="w-4 h-4 text-primary" />
-        {t("digitalCurrencies")}
+        العملات الرقمية
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {crypto.map((a, i) => {
@@ -129,9 +126,9 @@ export const CurrencyTab = () => {
                 </span>
               </div>
               <p className="font-bold text-primary text-sm">{a.symbol}</p>
-              <p className="text-[10px] text-muted-foreground truncate">{lang === "ar" ? a.nameAr : a.name}</p>
+              <p className="text-[10px] text-muted-foreground truncate">{a.nameAr}</p>
               <div className="mt-2 pt-2 border-t border-border/40">
-                <p className="text-[10px] text-muted-foreground">{t("livePrice")}</p>
+                <p className="text-[10px] text-muted-foreground">السعر الحي</p>
                 <p className="font-display text-base text-foreground" dir="ltr">
                   {a.price > 1
                     ? a.price.toLocaleString("en-US", { maximumFractionDigits: 2 })
@@ -145,7 +142,7 @@ export const CurrencyTab = () => {
       </div>
 
       <p className="text-[11px] text-muted-foreground text-center">
-        {t("dataSourcesNote")}
+        مصادر البيانات: open.er-api.com للعملات و CoinGecko للذهب والعملات الرقمية — تحديث تلقائي كل دقيقة.
       </p>
     </div>
   );

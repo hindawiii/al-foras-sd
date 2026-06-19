@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { ExternalLink, BadgeCheck, Search, Award, MapPin, Clock, Link2, Share2, Sparkles, Globe, Star } from "lucide-react";
 import { ScholarshipCard } from "@/components/foras/ScholarshipCard";
-import { SCHOLARSHIPS, Scholarship, computeMatchScore, pickSchField } from "@/lib/mockData";
+import { SCHOLARSHIPS, Scholarship, computeMatchScore } from "@/lib/mockData";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,18 +78,17 @@ export const ScholarshipsTab = () => {
       }, { onConflict: "user_id,scholarship_id" });
       toast.success(t("saved"));
     } else if (dir === "left") {
-      toast(t("dismissed"), { description: pickSchField(s, lang).title });
+      toast(t("dismissed"), { description: s.title });
     }
     setDeck(prev => prev.slice(1));
   };
 
   const shareDetail = async () => {
     if (!detail) return;
-    const v = pickSchField(detail, lang);
     const origin = window.location.origin;
     await nativeShare({
-      title: `${lang === "ar" ? "الفرص" : "Al-Foras"} — ${v.title}`,
-      text: `${v.title} — ${v.org} (${v.country})`,
+      title: `الفرص — ${detail.title}`,
+      text: `${detail.title} — ${detail.org} (${detail.country})`,
       url: `${origin}/?scholarship=${encodeURIComponent(detail.id)}`,
     });
   };
@@ -195,12 +194,12 @@ export const ScholarshipsTab = () => {
                   </div>
                   <button onClick={shareDetail}
                     className="w-9 h-9 rounded-full bg-primary/10 border border-primary/30 hover:bg-primary/20 flex items-center justify-center"
-                    aria-label={lang === "ar" ? "مشاركة" : "Share"}>
+                    aria-label="مشاركة">
                     <Share2 className="w-4 h-4 text-primary" />
                   </button>
                 </div>
-                <SheetTitle className={`${alignClass} font-display text-2xl text-gold-gradient`}>{pickSchField(detail, lang).title}</SheetTitle>
-                <p className={`text-primary text-sm ${alignClass}`}>{pickSchField(detail, lang).org}</p>
+                <SheetTitle className={`${alignClass} font-display text-2xl text-gold-gradient`}>{detail.title}</SheetTitle>
+                <p className={`text-primary text-sm ${alignClass}`}>{detail.org}</p>
               </SheetHeader>
               <div className="space-y-4 mt-6 pb-6">
                 <div className="bg-primary/10 border border-primary/30 rounded-xl p-3 flex items-center gap-2">
@@ -208,12 +207,12 @@ export const ScholarshipsTab = () => {
                   <span className="text-sm text-foreground">{t("matchPercent")}</span>
                   <span className={`font-bold text-primary text-lg ${isRtl ? "mr-auto" : "ml-auto"}`}>{computeMatchScore(detail, profile)}%</span>
                 </div>
-                <p className="text-foreground leading-relaxed">{pickSchField(detail, lang).description}</p>
+                <p className="text-foreground leading-relaxed">{detail.description}</p>
                 <div className="grid grid-cols-2 gap-3">
-                  <Detail icon={MapPin} label={t("country")} value={pickSchField(detail, lang).country} />
-                  <Detail icon={Award} label={t("amount")} value={pickSchField(detail, lang).amount} />
+                  <Detail icon={MapPin} label={t("country")} value={detail.country} />
+                  <Detail icon={Award} label={t("amount")} value={detail.amount} />
                   <Detail icon={Clock} label={t("deadline")} value={new Date(detail.deadline).toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US")} />
-                  <Detail icon={BadgeCheck} label={t("level")} value={pickSchField(detail, lang).level} />
+                  <Detail icon={BadgeCheck} label={t("level")} value={detail.level} />
                 </div>
 
                 <div className="grid grid-cols-1 gap-2 pt-2">

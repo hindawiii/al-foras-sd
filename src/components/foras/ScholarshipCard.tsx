@@ -1,6 +1,6 @@
 import { motion, PanInfo, useMotionValue, useTransform } from "framer-motion";
 import { BadgeCheck, Clock, MapPin, Award, X, Heart, Search, Link2, Share2, Sparkles, Languages } from "lucide-react";
-import { Scholarship, pickSchField } from "@/lib/mockData";
+import { Scholarship } from "@/lib/mockData";
 import { nativeShare } from "@/lib/share";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -19,9 +19,8 @@ const buildShareUrl = (id: string) => {
 };
 
 export const ScholarshipCard = ({ scholarship, onSwipe, onTap, active, index, matchScore }: Props) => {
-  const { t, lang, dir } = useLanguage();
+  const { t, dir } = useLanguage();
   const isRtl = dir === "rtl";
-  const view = pickSchField(scholarship, lang);
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
   const opacity = useTransform(x, [-200, -50, 0, 50, 200], [0, 1, 1, 1, 0]);
@@ -36,8 +35,8 @@ export const ScholarshipCard = ({ scholarship, onSwipe, onTap, active, index, ma
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     await nativeShare({
-      title: `${lang === "ar" ? "الفرص" : "Al-Foras"} — ${view.title}`,
-      text: `${view.title} — ${view.org} (${view.country})`,
+      title: `الفرص — ${scholarship.title}`,
+      text: `${scholarship.title} — ${scholarship.org} (${scholarship.country})`,
       url: buildShareUrl(scholarship.id),
     });
   };
@@ -126,20 +125,20 @@ export const ScholarshipCard = ({ scholarship, onSwipe, onTap, active, index, ma
 
           {/* Title block */}
           <div className={`${isRtl ? "text-right" : "text-left"} mb-4`}>
-            <p className="text-primary text-sm sm:text-base font-extrabold mb-1">{view.org}</p>
+            <p className="text-primary text-sm sm:text-base font-extrabold mb-1">{scholarship.org}</p>
             <h3 className="font-display text-2xl text-foreground leading-tight line-clamp-3">
-              {view.title}
+              {scholarship.title}
             </h3>
           </div>
 
           <p className={`text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3 ${isRtl ? "text-right" : "text-left"}`}>
-            {view.description}
+            {scholarship.description}
           </p>
 
           {/* Detail rows */}
           <div className="space-y-2 mb-4">
-            <Row icon={MapPin} label={t("country")} value={view.country} />
-            <Row icon={Award} label={t("amount")} value={view.amount} />
+            <Row icon={MapPin} label={t("country")} value={scholarship.country} />
+            <Row icon={Award} label={t("amount")} value={scholarship.amount} />
             <Row icon={Clock} label={t("deadline")} value={new Date(scholarship.deadline).toLocaleDateString(isRtl ? "ar-EG" : "en-US")} />
           </div>
 
@@ -148,7 +147,7 @@ export const ScholarshipCard = ({ scholarship, onSwipe, onTap, active, index, ma
             <span className="inline-flex items-center gap-1 text-[11px] bg-background/60 border border-primary/30 text-primary px-2 py-0.5 rounded-full">
               <Languages className="w-3 h-3" /> {t("studyLanguage")}: {studyLangLabel}
             </span>
-            {view.tags.map(tag => (
+            {scholarship.tags.map(tag => (
               <span key={tag} className="text-[11px] bg-primary/10 border border-primary/20 text-primary px-2 py-0.5 rounded-full">
                 {tag}
               </span>
