@@ -196,7 +196,7 @@ export const WeatherWidget = () => {
           <div className="flex items-center justify-between gap-3">
             <div className={`${isRtl ? "text-right" : "text-left"} flex-1 min-w-0`}>
               <div className={`flex items-center gap-1.5 ${isRtl ? "justify-end" : "justify-start"} text-xs text-muted-foreground mb-1`}>
-                <span className="truncate">{data.city}{data.country ? `، ${data.country}` : ""}</span>
+                <span className="truncate">{data.city}{data.country ? `${lang === "ar" ? "،" : ","} ${data.country}` : ""}</span>
                 <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
               </div>
               <p className="font-display text-4xl text-foreground leading-none" dir="ltr">
