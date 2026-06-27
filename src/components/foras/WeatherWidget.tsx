@@ -58,9 +58,9 @@ const owToWmo = (id: number): number => {
   return 3;
 };
 
-async function loadFromOpenMeteo(target: string): Promise<WeatherData | null> {
+async function loadFromOpenMeteo(target: string, lang: string = "en"): Promise<WeatherData | null> {
   const geo = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(target)}&count=1&language=ar&format=json`
+    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(target)}&count=1&language=${lang}&format=json`
   ).then(r => r.json());
   const place = geo?.results?.[0];
   if (!place) return null;
@@ -79,9 +79,9 @@ async function loadFromOpenMeteo(target: string): Promise<WeatherData | null> {
   };
 }
 
-async function loadFromOpenWeather(target: string, key: string): Promise<WeatherData | null> {
+async function loadFromOpenWeather(target: string, key: string, lang: string = "en"): Promise<WeatherData | null> {
   const res = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(target)}&appid=${key}&units=metric&lang=ar`
+    `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(target)}&appid=${key}&units=metric&lang=${lang}`
   );
   if (!res.ok) return null;
   const data = await res.json();
@@ -111,9 +111,9 @@ export const WeatherWidget = () => {
     try {
       setLoading(true); setError(null);
       const result = ENV.OPENWEATHER_API_KEY
-        ? await loadFromOpenWeather(target, ENV.OPENWEATHER_API_KEY).catch(() => null)
+        ? await loadFromOpenWeather(target, ENV.OPENWEATHER_API_KEY, lang).catch(() => null)
         : null;
-      const finalResult = result ?? await loadFromOpenMeteo(target);
+      const finalResult = result ?? await loadFromOpenMeteo(target, lang);
       if (!finalResult) { setError(t("cityNotFound")); setLoading(false); return; }
       setData(finalResult);
       setCity(finalResult.city);
@@ -122,7 +122,7 @@ export const WeatherWidget = () => {
     } finally { setLoading(false); }
   };
 
-  useEffect(() => { load(city); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load(city); /* eslint-disable-next-line */ }, [lang]);
 
   // When GPS resolves, refresh weather to user's actual location
   useEffect(() => {
@@ -196,7 +196,7 @@ export const WeatherWidget = () => {
           <div className="flex items-center justify-between gap-3">
             <div className={`${isRtl ? "text-right" : "text-left"} flex-1 min-w-0`}>
               <div className={`flex items-center gap-1.5 ${isRtl ? "justify-end" : "justify-start"} text-xs text-muted-foreground mb-1`}>
-                <span className="truncate">{data.city}{data.country ? `، ${data.country}` : ""}</span>
+                <span className="truncate">{data.city}{data.country ? `${lang === "ar" ? "،" : ","} ${data.country}` : ""}</span>
                 <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
               </div>
               <p className="font-display text-4xl text-foreground leading-none" dir="ltr">
