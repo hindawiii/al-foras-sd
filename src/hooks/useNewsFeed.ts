@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export interface FeedItem {
   id: string;
@@ -32,17 +33,24 @@ const PROXY = "https://api.rss2json.com/v1/api.json?rss_url=";
 
 const stripHtml = (s: string) => s?.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim() ?? "";
 
-const timeAgo = (iso?: string): string => {
+const timeAgo = (iso: string | undefined, lang: "ar" | "en"): string => {
   if (!iso) return "";
   const d = new Date(iso);
   const diff = (Date.now() - d.getTime()) / 1000;
-  if (diff < 60) return "الآن";
-  if (diff < 3600) return `قبل ${Math.floor(diff / 60)} دقيقة`;
-  if (diff < 86400) return `قبل ${Math.floor(diff / 3600)} ساعة`;
-  return `قبل ${Math.floor(diff / 86400)} يوم`;
+  if (lang === "ar") {
+    if (diff < 60) return "الآن";
+    if (diff < 3600) return `قبل ${Math.floor(diff / 60)} دقيقة`;
+    if (diff < 86400) return `قبل ${Math.floor(diff / 3600)} ساعة`;
+    return `قبل ${Math.floor(diff / 86400)} يوم`;
+  }
+  if (diff < 60) return "just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
 };
 
 export const useNewsFeed = (intervalMs = 5 * 60_000) => {
+  const { lang } = useLanguage();
   const [items, setItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,8 +61,11 @@ export const useNewsFeed = (intervalMs = 5 * 60_000) => {
     const load = async () => {
       try {
         setLoading(true);
+        const activeSources = lang === "en"
+          ? SOURCES.filter(s => s.category === "global")
+          : SOURCES;
         const results = await Promise.allSettled(
-          SOURCES.map(s =>
+          activeSources.map(s =>
             fetch(`${PROXY}${encodeURIComponent(s.url)}`)
               .then(r => r.json())
               .then(d => ({ source: s, data: d }))
@@ -82,7 +93,7 @@ export const useNewsFeed = (intervalMs = 5 * 60_000) => {
               category: source.category,
               image: img,
               publishedAt: it.pubDate,
-              time: timeAgo(it.pubDate),
+              time: timeAgo(it.pubDate, lang),
             });
           }
         }
@@ -94,9 +105,9 @@ export const useNewsFeed = (intervalMs = 5 * 60_000) => {
         });
         setItems(aggregated);
         setUpdatedAt(new Date());
-        setError(aggregated.length === 0 ? "لا توجد أخبار متاحة الآن" : null);
+        setError(aggregated.length === 0 ? (lang === "ar" ? "لا توجد أخبار متاحة الآن" : "No news available right now") : null);
       } catch {
-        if (!cancelled) setError("تعذر تحميل الأخبار");
+        if (!cancelled) setError(lang === "ar" ? "تعذر تحميل الأخبار" : "Couldn't load news");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -104,7 +115,7 @@ export const useNewsFeed = (intervalMs = 5 * 60_000) => {
     load();
     const t = window.setInterval(load, intervalMs);
     return () => { cancelled = true; window.clearInterval(t); };
-  }, [intervalMs]);
+  }, [intervalMs, lang]);
 
   return { items, loading, error, updatedAt };
 };
