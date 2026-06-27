@@ -61,9 +61,9 @@ export const useNewsFeed = (intervalMs = 5 * 60_000) => {
     const load = async () => {
       try {
         setLoading(true);
-        // Always fetch from all sources so Local/Arab tabs keep working
-        // regardless of the UI language.
-        const activeSources = SOURCES;
+        const activeSources = lang === "en"
+          ? SOURCES.filter(s => s.category === "global")
+          : SOURCES;
         const results = await Promise.allSettled(
           activeSources.map(s =>
             fetch(`${PROXY}${encodeURIComponent(s.url)}`)
