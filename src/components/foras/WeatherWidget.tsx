@@ -59,10 +59,16 @@ const owToWmo = (id: number): number => {
 };
 
 async function loadFromOpenMeteo(target: string, lang: string = "en"): Promise<WeatherData | null> {
-  const geo = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(target)}&count=1&language=${lang}&format=json`
-  ).then(r => r.json());
-  const place = geo?.results?.[0];
+  // Try the requested language first, then fall back to other common languages
+  // so a city saved in Arabic still resolves when the UI is in English (and vice-versa).
+  const tryLangs = Array.from(new Set([lang, "en", "ar"]));
+  let place: any = null;
+  for (const l of tryLangs) {
+    const geo = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(target)}&count=1&language=${l}&format=json`
+    ).then(r => r.json()).catch(() => null);
+    if (geo?.results?.[0]) { place = geo.results[0]; break; }
+  }
   if (!place) return null;
   const w = await fetch(
     `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m`
@@ -83,7 +89,23 @@ async function loadFromOpenWeather(target: string, key: string, lang: string = "
   const res = await fetch(
     `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(target)}&appid=${key}&units=metric&lang=${lang}`
   );
-  if (!res.ok) return null;
+  if (!res.ok) {
+    // Retry without language hint as a fallback
+    const retry = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(target)}&appid=${key}&units=metric`
+    );
+    if (!retry.ok) return null;
+    const dataRetry = await retry.json();
+    if (!dataRetry || dataRetry.cod !== 200) return null;
+    return {
+      temp: Math.round(dataRetry.main?.temp ?? 0),
+      code: owToWmo(dataRetry.weather?.[0]?.id ?? 800),
+      windspeed: Math.round((dataRetry.wind?.speed ?? 0) * 3.6),
+      humidity: dataRetry.main?.humidity,
+      city: dataRetry.name ?? target,
+      country: dataRetry.sys?.country,
+    };
+  }
   const data = await res.json();
   if (!data || data.cod !== 200) return null;
   return {
