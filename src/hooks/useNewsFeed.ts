@@ -17,19 +17,16 @@ interface FeedSource {
   name: string;
   url: string; // RSS feed URL
   category: FeedItem["category"];
-  lang: "ar" | "en";
 }
 
 // Public RSS feeds (Arabic + global). We proxy them through rss2json (free, public).
 const SOURCES: FeedSource[] = [
-  { name: "الجزيرة",        url: "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a84051c5e498/73d0e1b4-532f-45ef-b135-bfdff8b8cab9", category: "arab",   lang: "ar" },
-  { name: "BBC عربي",       url: "https://feeds.bbci.co.uk/arabic/rss.xml",         category: "arab",   lang: "ar" },
-  { name: "Sky News عربية", url: "https://www.skynewsarabia.com/web/rss/4608.xml",  category: "arab",   lang: "ar" },
-  { name: "BBC World",      url: "https://feeds.bbci.co.uk/news/world/rss.xml",     category: "global", lang: "en" },
-  { name: "CNN",            url: "http://rss.cnn.com/rss/edition_world.rss",        category: "global", lang: "en" },
-  { name: "Reuters",        url: "https://feeds.reuters.com/reuters/worldNews",     category: "global", lang: "en" },
-  { name: "Al Jazeera English", url: "https://www.aljazeera.com/xml/rss/all.xml",   category: "arab",   lang: "en" },
-  { name: "Arab News",      url: "https://www.arabnews.com/rss.xml",                category: "arab",   lang: "en" },
+  { name: "الجزيرة",     url: "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a84051c5e498/73d0e1b4-532f-45ef-b135-bfdff8b8cab9", category: "arab" },
+  { name: "BBC عربي",    url: "https://feeds.bbci.co.uk/arabic/rss.xml", category: "arab" },
+  { name: "Sky News عربية", url: "https://www.skynewsarabia.com/web/rss/4608.xml", category: "arab" },
+  { name: "BBC World",   url: "https://feeds.bbci.co.uk/news/world/rss.xml", category: "global" },
+  { name: "CNN",         url: "http://rss.cnn.com/rss/edition_world.rss", category: "global" },
+  { name: "Reuters",     url: "https://feeds.reuters.com/reuters/worldNews", category: "global" },
 ];
 
 const PROXY = "https://api.rss2json.com/v1/api.json?rss_url=";
@@ -64,9 +61,9 @@ export const useNewsFeed = (intervalMs = 5 * 60_000) => {
     const load = async () => {
       try {
         setLoading(true);
-        // Match source language to UI language so English mode shows English
-        // content and Arabic mode shows Arabic content across all tabs.
-        const activeSources = SOURCES.filter(s => s.lang === lang);
+        // Always fetch from all sources so Local/Arab tabs keep working
+        // regardless of the UI language.
+        const activeSources = SOURCES;
         const results = await Promise.allSettled(
           activeSources.map(s =>
             fetch(`${PROXY}${encodeURIComponent(s.url)}`)
