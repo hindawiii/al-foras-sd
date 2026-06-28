@@ -11,8 +11,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { nativeShare } from "@/lib/share";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { AIAdvisorSheet } from "@/components/foras/AIAdvisorSheet";
-import { Sparkles as SparklesIcon } from "lucide-react";
 
 export const ScholarshipsTab = () => {
   const { info: geo } = useGeolocation(true);
@@ -36,7 +34,6 @@ export const ScholarshipsTab = () => {
 
   const [deck, setDeck] = useState<Scholarship[]>(orderedDeck);
   const [detail, setDetail] = useState<Scholarship | null>(null);
-  const [advisorOpen, setAdvisorOpen] = useState(false);
   const [aiNotice, setAiNotice] = useState(false);
   const [profile, setProfile] = useState<{ location?: string; skills?: string[]; interests?: string[] }>({});
   const { user } = useAuth();
@@ -219,15 +216,6 @@ export const ScholarshipsTab = () => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-2 pt-2">
-                  <Button
-                    variant="luxe"
-                    size="lg"
-                    className="w-full relative overflow-hidden"
-                    onClick={() => setAdvisorOpen(true)}
-                  >
-                    <SparklesIcon className={`w-4 h-4 ${isRtl ? "ml-2" : "mr-2"}`} />
-                    {lang === "ar" ? "طابق ملفي مع هذه المنحة" : "Match my profile with this grant"}
-                  </Button>
                   <Button asChild variant="luxe" size="lg" className="w-full">
                     <a
                       href={detail.officialUrl}
@@ -258,12 +246,6 @@ export const ScholarshipsTab = () => {
           )}
         </SheetContent>
       </Sheet>
-      <AIAdvisorSheet
-        open={advisorOpen}
-        onOpenChange={setAdvisorOpen}
-        mode="scholarship-match"
-        scholarship={detail}
-      />
     </div>
   );
 };
