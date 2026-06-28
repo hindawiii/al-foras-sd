@@ -5,6 +5,7 @@ import { BrandMark } from "@/components/foras/Logo";
 import { CurrencyCalculator } from "@/components/foras/CurrencyCalculator";
 import { SettingsSheet } from "@/components/foras/SettingsSheet";
 import { NotificationsSheet } from "@/components/foras/NotificationsSheet";
+import { AIAdvisorFAB } from "@/components/foras/AIAdvisorFAB";
 import { ScholarshipsTab } from "./ScholarshipsTab";
 import { NewsTab } from "./NewsTab";
 import { ApplicationsTab } from "./ApplicationsTab";
@@ -109,6 +110,7 @@ export const AppShell = () => {
       </nav>
 
       {tab !== "currency" && <CurrencyCalculator />}
+      <AIAdvisorFAB />
       <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
       <NotificationsSheet open={notifOpen} onOpenChange={setNotifOpen} />
     </div>
