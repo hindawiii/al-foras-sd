@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Save, Plus, X, GraduationCap, MapPin, Mail, User as UserIcon, Edit3, Sparkles, Check, Camera, Loader2 } from "lucide-react";
+import { Save, Plus, X, GraduationCap, MapPin, Mail, Phone, User as UserIcon, Edit3, Sparkles, Check, Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,11 +14,11 @@ import { useSettings } from "@/contexts/SettingsContext";
 import { guestStorage } from "@/lib/guestStorage";
 
 interface ProfileState {
-  full_name: string; bio: string; education: string; location: string; avatar_url: string;
+  full_name: string; bio: string; education: string; location: string; avatar_url: string; phone: string;
   skills: string[]; interests: string[];
 }
 
-const empty: ProfileState = { full_name: "", bio: "", education: "", location: "", avatar_url: "", skills: [], interests: [] };
+const empty: ProfileState = { full_name: "", bio: "", education: "", location: "", avatar_url: "", phone: "", skills: [], interests: [] };
 
 export const ProfileTab = () => {
   const { user, isGuest } = useAuth();
@@ -49,6 +49,7 @@ export const ProfileTab = () => {
             full_name: data.full_name ?? "", bio: data.bio ?? "",
             education: data.education ?? "", location: data.location ?? "",
             avatar_url: data.avatar_url ?? "",
+            phone: (data as any).phone ?? "",
             skills: data.skills ?? [], interests: (data as any).interests ?? [],
           };
           setProfile(p); setDraft(p);
@@ -329,6 +330,10 @@ export const ProfileTab = () => {
         <Field icon={MapPin} label={t("location")}>
           <Input value={draft.location} onChange={e => setDraft({ ...draft, location: e.target.value })}
             className={`bg-input border-gold/30 ${alignClass}`} placeholder={t("locationHolder")} />
+        </Field>
+        <Field icon={Phone} label="رقم الهاتف">
+          <Input value={draft.phone} onChange={e => setDraft({ ...draft, phone: e.target.value })}
+            className={`bg-input border-gold/30 ${alignClass}`} placeholder="+249 9xxxxxxxx" dir="ltr" type="tel" />
         </Field>
         <Field icon={Mail} label={t("bio")}>
           <Textarea value={draft.bio} onChange={e => setDraft({ ...draft, bio: e.target.value })}
