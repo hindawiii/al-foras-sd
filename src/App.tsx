@@ -11,6 +11,7 @@ import AuthCallback from "./pages/auth/AuthCallback";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
+import { AIAdvisor } from "@/components/foras/AIAdvisor";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <AIAdvisor />
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>

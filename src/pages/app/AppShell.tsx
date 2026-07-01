@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Award, Newspaper, Bookmark, User, Settings as SettingsIcon, Bell, Coins, Languages } from "lucide-react";
 import { BrandMark } from "@/components/foras/Logo";
-import { CurrencyCalculator } from "@/components/foras/CurrencyCalculator";
 import { SettingsSheet } from "@/components/foras/SettingsSheet";
 import { NotificationsSheet } from "@/components/foras/NotificationsSheet";
 import { ScholarshipsTab } from "./ScholarshipsTab";
@@ -108,7 +107,6 @@ export const AppShell = () => {
         </div>
       </nav>
 
-      {tab !== "currency" && <CurrencyCalculator />}
       <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
       <NotificationsSheet open={notifOpen} onOpenChange={setNotifOpen} />
     </div>
