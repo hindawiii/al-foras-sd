@@ -25,6 +25,7 @@ export type Database = {
           id: string
           interests: string[] | null
           location: string | null
+          phone: string | null
           skills: string[] | null
           updated_at: string
         }
@@ -38,6 +39,7 @@ export type Database = {
           id: string
           interests?: string[] | null
           location?: string | null
+          phone?: string | null
           skills?: string[] | null
           updated_at?: string
         }
@@ -51,6 +53,7 @@ export type Database = {
           id?: string
           interests?: string[] | null
           location?: string | null
+          phone?: string | null
           skills?: string[] | null
           updated_at?: string
         }
