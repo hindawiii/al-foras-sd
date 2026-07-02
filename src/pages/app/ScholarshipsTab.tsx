@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { ExternalLink, BadgeCheck, Search, Award, MapPin, Clock, Link2, Share2, Sparkles, Globe, Star } from "lucide-react";
+import { ExternalLink, BadgeCheck, Search, Award, MapPin, Clock, Link2, Share2, Sparkles, Globe, Star, GraduationCap } from "lucide-react";
 import { ScholarshipCard } from "@/components/foras/ScholarshipCard";
+import { UniversitiesGuide } from "@/components/foras/UniversitiesGuide";
 import { SCHOLARSHIPS, Scholarship, computeMatchScore } from "@/lib/mockData";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ export const ScholarshipsTab = () => {
   const [deck, setDeck] = useState<Scholarship[]>(orderedDeck);
   const [detail, setDetail] = useState<Scholarship | null>(null);
   const [aiNotice, setAiNotice] = useState(false);
+  const [uniOpen, setUniOpen] = useState(false);
   const [profile, setProfile] = useState<{ location?: string; skills?: string[]; interests?: string[] }>({});
   const { user } = useAuth();
 
@@ -119,6 +121,21 @@ export const ScholarshipsTab = () => {
           })}
         </div>
       </div>
+
+      {/* Sudan universities guide entry */}
+      <button
+        onClick={() => setUniOpen(true)}
+        className="mb-3 mx-1 w-[calc(100%-0.5rem)] flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-card/60 backdrop-blur-md border border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all text-right"
+      >
+        <div className="w-9 h-9 rounded-xl bg-gold-gradient flex items-center justify-center shadow-gold flex-shrink-0">
+          <GraduationCap className="w-4.5 h-4.5 text-primary-foreground" strokeWidth={2} />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-bold text-gold-gradient leading-tight">دليل الجامعات السودانية</p>
+          <p className="text-[11px] text-muted-foreground">جامعات، تخصصات، ونسب القبول</p>
+        </div>
+        <ExternalLink className="w-4 h-4 text-primary" />
+      </button>
 
       <div className="mb-3 px-1 text-[11px] text-muted-foreground flex items-center gap-1.5 leading-relaxed">
         <Globe className="w-3.5 h-3.5 text-primary flex-shrink-0" />
@@ -246,6 +263,8 @@ export const ScholarshipsTab = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      <UniversitiesGuide open={uniOpen} onOpenChange={setUniOpen} />
     </div>
   );
 };
