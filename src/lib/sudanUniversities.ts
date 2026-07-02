@@ -1,0 +1,218 @@
+// Sudanese universities directory — Phase 2 of AI Advisor project.
+// Source: publicly available admission data from official university websites
+// and the Ministry of Higher Education and Scientific Research (SD).
+
+export type UniType = "government" | "private" | "technical";
+
+export interface SudanUniversity {
+  id: string;
+  name: string;
+  nameEn: string;
+  city: string;
+  type: UniType;
+  founded: number;
+  website: string;
+  faculties: string[];
+  minPercentage: number; // approximate minimum admission percentage
+  highlights: string;
+}
+
+export const SUDAN_UNIVERSITIES: SudanUniversity[] = [
+  {
+    id: "u-khartoum",
+    name: "جامعة الخرطوم",
+    nameEn: "University of Khartoum",
+    city: "الخرطوم",
+    type: "government",
+    founded: 1902,
+    website: "https://www.uofk.edu/",
+    faculties: ["الطب", "الهندسة", "العلوم", "الاقتصاد", "القانون", "الآداب", "الصيدلة", "طب الأسنان"],
+    minPercentage: 85,
+    highlights: "أعرق الجامعات السودانية، وأعلى الجامعات تنافساً في القبول.",
+  },
+  {
+    id: "u-sust",
+    name: "جامعة السودان للعلوم والتكنولوجيا",
+    nameEn: "Sudan University of Science and Technology",
+    city: "الخرطوم",
+    type: "government",
+    founded: 1990,
+    website: "https://sustech.edu/",
+    faculties: ["الهندسة", "الحاسوب", "الطب", "علوم الاتصالات", "التربية", "الإعلام", "الموسيقى والدراما"],
+    minPercentage: 78,
+    highlights: "أكبر جامعة تقنية في السودان بأكثر من 20 كلية.",
+  },
+  {
+    id: "u-gezira",
+    name: "جامعة الجزيرة",
+    nameEn: "University of Gezira",
+    city: "ود مدني",
+    type: "government",
+    founded: 1975,
+    website: "https://uofg.edu.sd/",
+    faculties: ["الطب", "الزراعة", "الاقتصاد الريفي", "الهندسة", "العلوم", "التربية", "الطب البيطري"],
+    minPercentage: 80,
+    highlights: "رائدة في الطب المجتمعي والزراعة، مشروع الجزيرة.",
+  },
+  {
+    id: "u-neelain",
+    name: "جامعة النيلين",
+    nameEn: "Al-Neelain University",
+    city: "الخرطوم",
+    type: "government",
+    founded: 1955,
+    website: "https://neelain.edu.sd/",
+    faculties: ["الطب", "القانون", "الاقتصاد", "العلوم السياسية", "الهندسة", "الحاسوب", "الآداب"],
+    minPercentage: 75,
+    highlights: "أصلها فرع جامعة القاهرة بالخرطوم، متعددة التخصصات.",
+  },
+  {
+    id: "u-omdurman",
+    name: "جامعة أم درمان الإسلامية",
+    nameEn: "Omdurman Islamic University",
+    city: "أم درمان",
+    type: "government",
+    founded: 1912,
+    website: "https://oiu.edu.sd/",
+    faculties: ["الشريعة والقانون", "أصول الدين", "الدعوة", "الطب", "الصيدلة", "الهندسة"],
+    minPercentage: 72,
+    highlights: "متخصصة في العلوم الإسلامية إلى جانب الطب والهندسة.",
+  },
+  {
+    id: "u-bakht-alruda",
+    name: "جامعة بخت الرضا",
+    nameEn: "Bakht Al-Ruda University",
+    city: "الدويم",
+    type: "government",
+    founded: 1990,
+    website: "https://bakhtalruda.edu.sd/",
+    faculties: ["التربية", "الآداب", "الاقتصاد", "الزراعة", "علوم الحاسوب"],
+    minPercentage: 65,
+    highlights: "امتداد لمعهد بخت الرضا التاريخي، متميزة في إعداد المعلمين.",
+  },
+  {
+    id: "u-dilling",
+    name: "جامعة الدلنج",
+    nameEn: "Dilling University",
+    city: "الدلنج",
+    type: "government",
+    founded: 1994,
+    website: "https://dilling.edu.sd/",
+    faculties: ["التربية", "الطب", "العلوم الطبية التطبيقية", "الاقتصاد", "الغابات والمراعي"],
+    minPercentage: 62,
+    highlights: "خدمة لولاية جنوب كردفان بتخصصات طبية وزراعية.",
+  },
+  {
+    id: "u-kordofan",
+    name: "جامعة كردفان",
+    nameEn: "University of Kordofan",
+    city: "الأبيض",
+    type: "government",
+    founded: 1990,
+    website: "https://kord.edu.sd/",
+    faculties: ["الطب", "الطب البيطري", "الزراعة", "علوم الأغذية", "التربية", "الهندسة"],
+    minPercentage: 70,
+    highlights: "أشهر جامعات غرب السودان، متميزة في الطب البيطري.",
+  },
+  {
+    id: "u-red-sea",
+    name: "جامعة البحر الأحمر",
+    nameEn: "Red Sea University",
+    city: "بورتسودان",
+    type: "government",
+    founded: 1994,
+    website: "https://rsu.edu.sd/",
+    faculties: ["علوم البحار", "الهندسة البحرية", "التعدين", "الطب", "الاقتصاد"],
+    minPercentage: 68,
+    highlights: "الوحيدة المتخصصة في علوم البحار والهندسة البحرية.",
+  },
+  {
+    id: "u-nile-valley",
+    name: "جامعة وادي النيل",
+    nameEn: "Nile Valley University",
+    city: "عطبرة",
+    type: "government",
+    founded: 1990,
+    website: "https://nilevalley.edu.sd/",
+    faculties: ["الطب", "الصيدلة", "الهندسة", "التعدين", "الآداب", "التربية"],
+    minPercentage: 74,
+    highlights: "متميزة في هندسة التعدين والطب.",
+  },
+  {
+    id: "u-shendi",
+    name: "جامعة شندي",
+    nameEn: "Shendi University",
+    city: "شندي",
+    type: "government",
+    founded: 1994,
+    website: "https://ush.sd/",
+    faculties: ["الطب", "طب الأسنان", "الصيدلة", "التمريض", "العلوم الطبية التطبيقية"],
+    minPercentage: 76,
+    highlights: "معروفة بكلياتها الطبية والصحية المتقدمة.",
+  },
+  {
+    id: "u-sennar",
+    name: "جامعة سنار",
+    nameEn: "Sennar University",
+    city: "سنار",
+    type: "government",
+    founded: 1977,
+    website: "https://sinnaru.edu.sd/",
+    faculties: ["الطب", "الزراعة", "علوم الحاسوب", "التربية", "الاقتصاد"],
+    minPercentage: 68,
+    highlights: "قوية في الزراعة وعلوم الري.",
+  },
+  {
+    id: "u-ahfad",
+    name: "جامعة الأحفاد للبنات",
+    nameEn: "Ahfad University for Women",
+    city: "أم درمان",
+    type: "private",
+    founded: 1966,
+    website: "https://www.ahfad.edu.sd/",
+    faculties: ["الطب", "الصيدلة", "علم النفس", "التنمية الريفية", "إدارة الأعمال", "العلوم الصحية"],
+    minPercentage: 70,
+    highlights: "الجامعة الرائدة في تعليم المرأة على مستوى إفريقيا.",
+  },
+  {
+    id: "u-mashreq",
+    name: "جامعة المشرق",
+    nameEn: "Al-Mashreq University",
+    city: "الخرطوم",
+    type: "private",
+    founded: 1997,
+    website: "https://almashreq.edu.sd/",
+    faculties: ["الحاسوب", "الهندسة", "علوم الاتصالات", "إدارة الأعمال", "الصيدلة"],
+    minPercentage: 60,
+    highlights: "خاصة، متميزة في تقنية المعلومات والاتصالات.",
+  },
+  {
+    id: "u-future",
+    name: "جامعة المستقبل",
+    nameEn: "Future University",
+    city: "الخرطوم",
+    type: "private",
+    founded: 1991,
+    website: "https://fu.edu.sd/",
+    faculties: ["الهندسة", "الحاسوب", "الاتصالات", "الطاقة", "إدارة الأعمال"],
+    minPercentage: 60,
+    highlights: "من أوائل الجامعات الخاصة، قوية في الهندسة والطاقة.",
+  },
+  {
+    id: "u-mut",
+    name: "الجامعة الحديثة للعلوم والتكنولوجيا",
+    nameEn: "Modern University for Sciences & Technology",
+    city: "الخرطوم",
+    type: "private",
+    founded: 2001,
+    website: "https://must.edu.sd/",
+    faculties: ["الطب", "طب الأسنان", "الصيدلة", "الهندسة", "علوم الحاسوب"],
+    minPercentage: 68,
+    highlights: "خاصة، مركزة على العلوم الطبية والتكنولوجية.",
+  },
+];
+
+export const CITY_LIST = Array.from(new Set(SUDAN_UNIVERSITIES.map((u) => u.city))).sort();
+export const FACULTY_LIST = Array.from(
+  new Set(SUDAN_UNIVERSITIES.flatMap((u) => u.faculties))
+).sort();
