@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, MapPin, ExternalLink, Search, Building2, Filter, Sparkles } from "lucide-react";
+import { GraduationCap, MapPin, ExternalLink, Search, Building2, Filter, Sparkles, Target } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -31,11 +31,34 @@ const typeBadgeClass: Record<UniType, string> = {
   technical: "bg-blue-500/15 text-blue-400 border-blue-500/40",
 };
 
+const PCT_KEY = "foras:userPercentage";
+
 export const UniversitiesGuide = ({ open, onOpenChange, userPercentage }: Props) => {
   const [q, setQ] = useState("");
   const [city, setCity] = useState<string>("");
   const [faculty, setFaculty] = useState<string>("");
   const [type, setType] = useState<UniType | "">("");
+  const [pctInput, setPctInput] = useState<string>("");
+  const [onlyEligible, setOnlyEligible] = useState(false);
+
+  // Load saved percentage once (or fallback to prop)
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem(PCT_KEY) : null;
+    if (saved) setPctInput(saved);
+    else if (userPercentage) setPctInput(String(userPercentage));
+  }, [userPercentage]);
+
+  const effectivePct = useMemo(() => {
+    const n = parseFloat(pctInput);
+    if (Number.isFinite(n) && n > 0 && n <= 100) return n;
+    return userPercentage;
+  }, [pctInput, userPercentage]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const n = parseFloat(pctInput);
+    if (Number.isFinite(n) && n > 0 && n <= 100) localStorage.setItem(PCT_KEY, String(n));
+  }, [pctInput]);
 
   const filtered = useMemo<SudanUniversity[]>(() => {
     const term = q.trim();
@@ -43,19 +66,25 @@ export const UniversitiesGuide = ({ open, onOpenChange, userPercentage }: Props)
       if (city && u.city !== city) return false;
       if (type && u.type !== type) return false;
       if (faculty && !u.faculties.includes(faculty)) return false;
+      if (onlyEligible && effectivePct !== undefined && effectivePct < u.minPercentage) return false;
       if (!term) return true;
       const hay = `${u.name} ${u.nameEn} ${u.city} ${u.faculties.join(" ")}`.toLowerCase();
       return hay.includes(term.toLowerCase());
     }).sort((a, b) => {
       // If user has a percentage, put qualifying schools first.
-      if (userPercentage) {
-        const aOk = userPercentage >= a.minPercentage ? 0 : 1;
-        const bOk = userPercentage >= b.minPercentage ? 0 : 1;
+      if (effectivePct !== undefined) {
+        const aOk = effectivePct >= a.minPercentage ? 0 : 1;
+        const bOk = effectivePct >= b.minPercentage ? 0 : 1;
         if (aOk !== bOk) return aOk - bOk;
       }
       return b.minPercentage - a.minPercentage;
     });
-  }, [q, city, faculty, type, userPercentage]);
+  }, [q, city, faculty, type, effectivePct, onlyEligible]);
+
+  const eligibleCount = useMemo(() => {
+    if (effectivePct === undefined) return 0;
+    return SUDAN_UNIVERSITIES.filter((u) => effectivePct >= u.minPercentage).length;
+  }, [effectivePct]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -81,6 +110,54 @@ export const UniversitiesGuide = ({ open, onOpenChange, userPercentage }: Props)
 
         {/* Filters */}
         <div className="space-y-2.5 mt-3 pb-2">
+          {/* Smart matching by percentage */}
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-gold-gradient flex items-center justify-center shadow-gold">
+                <Target className="w-4 h-4 text-primary-foreground" strokeWidth={2.2} />
+              </div>
+              <div className="flex-1 text-right">
+                <p className="text-xs font-bold text-gold-gradient leading-tight">مطابقة ذكية بالنسبة</p>
+                <p className="text-[10px] text-muted-foreground">اكتب نسبتك لنعرض الجامعات المؤهلة لك</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  max={100}
+                  step={0.1}
+                  value={pctInput}
+                  onChange={(e) => setPctInput(e.target.value)}
+                  placeholder="مثال: 82.5"
+                  className="text-right bg-background/60 border-border pr-3"
+                  dir="rtl"
+                />
+              </div>
+              <span className="text-primary font-bold text-lg">%</span>
+              {effectivePct !== undefined && (
+                <button
+                  onClick={() => setOnlyEligible((v) => !v)}
+                  className={`text-[11px] font-bold px-2.5 py-1.5 rounded-lg border transition-colors ${
+                    onlyEligible
+                      ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
+                      : "bg-background/40 border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  المؤهلة فقط
+                </button>
+              )}
+            </div>
+            {effectivePct !== undefined && (
+              <p className="text-[11px] text-emerald-400 mt-2 flex items-center gap-1">
+                <Sparkles className="w-3 h-3" />
+                بنسبة {effectivePct}% أنت مؤهل لـ {eligibleCount} من {SUDAN_UNIVERSITIES.length} جامعة
+              </p>
+            )}
+          </div>
+
           <div className="relative">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             <Input
