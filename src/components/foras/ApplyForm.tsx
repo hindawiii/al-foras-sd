@@ -6,9 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { Scholarship } from "@/lib/mockData";
+import { applicationsStore } from "@/lib/applicationsStorage";
 
 interface Props {
   scholarship: Scholarship | null;
@@ -17,28 +16,27 @@ interface Props {
 }
 
 export const ApplyForm = ({ scholarship, open, onOpenChange }: Props) => {
-  const { user } = useAuth();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState(user?.email ?? "");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [motivation, setMotivation] = useState("");
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {
-    if (!scholarship || !user) return;
+    if (!scholarship) return;
     if (!name.trim() || !email.trim() || !motivation.trim()) {
       toast.error("الرجاء تعبئة جميع الحقول المطلوبة"); return;
     }
     setBusy(true);
-    const { error } = await supabase.from("saved_scholarships").upsert({
-      user_id: user.id,
-      scholarship_id: scholarship.id,
-      scholarship_title: scholarship.title,
-      scholarship_data: { ...scholarship, application: { name, email, phone, motivation, submittedAt: new Date().toISOString() } } as any,
-      status: "applied",
-    }, { onConflict: "user_id,scholarship_id" });
+    try {
+      applicationsStore.upsertFromScholarship(scholarship, "applied", {
+        notes: `${name} · ${email}${phone ? " · " + phone : ""}\n\n${motivation}`,
+      });
+    } catch (e) {
+      setBusy(false);
+      toast.error("تعذر حفظ الطلب"); return;
+    }
     setBusy(false);
-    if (error) { toast.error("تعذر إرسال الطلب"); return; }
     toast.success("تم إرسال طلبك بنجاح");
     onOpenChange(false);
     setName(""); setPhone(""); setMotivation("");
