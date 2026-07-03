@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { nativeShare } from "@/lib/share";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { applicationsStore } from "@/lib/applicationsStorage";
 
 export const ScholarshipsTab = () => {
   const { info: geo } = useGeolocation(true);
@@ -73,11 +74,8 @@ export const ScholarshipsTab = () => {
   }, [user]);
 
   const handleSwipe = async (dir: "left" | "right", s: Scholarship) => {
-    if (dir === "right" && user) {
-      await supabase.from("saved_scholarships").upsert({
-        user_id: user.id, scholarship_id: s.id, scholarship_title: s.title,
-        scholarship_data: s as any, status: "saved",
-      }, { onConflict: "user_id,scholarship_id" });
+    if (dir === "right") {
+      applicationsStore.upsertFromScholarship(s, "saved");
       toast.success(t("saved"));
     } else if (dir === "left") {
       toast(t("dismissed"), { description: s.title });
