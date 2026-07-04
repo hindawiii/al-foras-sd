@@ -39,6 +39,7 @@ const STRINGS: Record<Lang, Record<string, string>> = {
     tabCurrency: "العملات",
     tabApplications: "طلباتي",
     tabProfile: "الملف الشخصي",
+    tabJobs: "فرص العمل",
     // Notifications
     notifMatchTitle: "مطابقة ذكية جديدة",
     notifMatchBody: "وجدنا 3 منح تطابق مهاراتك بناءً على أحدث الأخبار العالمية.",
@@ -220,6 +221,7 @@ const STRINGS: Record<Lang, Record<string, string>> = {
     tabCurrency: "Currency",
     tabApplications: "My Applications",
     tabProfile: "Profile",
+    tabJobs: "Jobs",
     // Notifications
     notifMatchTitle: "New smart match",
     notifMatchBody: "We found 3 scholarships matching your skills based on the latest global news.",
