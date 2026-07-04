@@ -39,6 +39,7 @@ const STRINGS: Record<Lang, Record<string, string>> = {
     tabCurrency: "العملات",
     tabApplications: "طلباتي",
     tabProfile: "الملف الشخصي",
+    tabJobs: "فرص العمل",
     // Notifications
     notifMatchTitle: "مطابقة ذكية جديدة",
     notifMatchBody: "وجدنا 3 منح تطابق مهاراتك بناءً على أحدث الأخبار العالمية.",
