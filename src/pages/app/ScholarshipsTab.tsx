@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { ExternalLink, BadgeCheck, Search, Award, MapPin, Clock, Link2, Share2, Sparkles, Globe, Star, GraduationCap } from "lucide-react";
+import { ExternalLink, BadgeCheck, Search, Award, MapPin, Clock, Link2, Share2, Sparkles, Globe, Star, GraduationCap, Briefcase, ArrowLeft } from "lucide-react";
 import { ScholarshipCard } from "@/components/foras/ScholarshipCard";
 import { UniversitiesGuide } from "@/components/foras/UniversitiesGuide";
 import { SCHOLARSHIPS, Scholarship, computeMatchScore } from "@/lib/mockData";
@@ -120,20 +120,46 @@ export const ScholarshipsTab = () => {
         </div>
       </div>
 
-      {/* Sudan universities guide entry */}
-      <button
-        onClick={() => setUniOpen(true)}
-        className="mb-3 mx-1 w-[calc(100%-0.5rem)] flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-card/60 backdrop-blur-md border border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all text-right"
-      >
-        <div className="w-9 h-9 rounded-xl bg-gold-gradient flex items-center justify-center shadow-gold flex-shrink-0">
-          <GraduationCap className="w-4.5 h-4.5 text-primary-foreground" strokeWidth={2} />
-        </div>
-        <div className="flex-1">
-          <p className="text-sm font-bold text-gold-gradient leading-tight">دليل الجامعات السودانية</p>
-          <p className="text-[11px] text-muted-foreground">جامعات، تخصصات، ونسب القبول</p>
-        </div>
-        <ExternalLink className="w-4 h-4 text-primary" />
-      </button>
+      {/* Quick access cards: Sudan universities + Jobs */}
+      <div className="grid grid-cols-2 gap-2.5 mb-3 mx-1">
+        <button
+          onClick={() => setUniOpen(true)}
+          className="group relative overflow-hidden rounded-2xl p-3.5 bg-card/60 backdrop-blur-md border border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all text-right flex flex-col items-start gap-2"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gold-gradient flex items-center justify-center shadow-gold">
+            <GraduationCap className="w-5 h-5 text-primary-foreground" strokeWidth={2} />
+          </div>
+          <div className="flex-1 w-full">
+            <p className="text-sm font-bold text-gold-gradient leading-tight">دليل الجامعات السودانية</p>
+            <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+              16 جامعة · نسب القبول · تخصصات · تكاليف
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-primary mt-1">
+            اكتشف <ArrowLeft className="w-3 h-3" />
+          </span>
+        </button>
+
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("foras:navigate", { detail: { tab: "jobs" } }))}
+          className="group relative overflow-hidden rounded-2xl p-3.5 bg-card/60 backdrop-blur-md border border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all text-right flex flex-col items-start gap-2"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[hsl(210_70%_50%)] to-[hsl(220_60%_45%)] flex items-center justify-center shadow-[0_8px_24px_-8px_hsl(210_70%_50%/0.6)]">
+            <Briefcase className="w-5 h-5 text-white" strokeWidth={2} />
+          </div>
+          <div className="flex-1 w-full">
+            <p className="text-sm font-bold bg-gradient-to-r from-[hsl(210_70%_60%)] to-[hsl(220_60%_55%)] bg-clip-text text-transparent leading-tight">
+              فرص العمل
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+              50+ موقع · فريلانسر · وظائف · تدريس أونلاين
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[hsl(210_70%_60%)] mt-1">
+            اكتشف <ArrowLeft className="w-3 h-3" />
+          </span>
+        </button>
+      </div>
 
       <div className="mb-3 px-1 text-[11px] text-muted-foreground flex items-center gap-1.5 leading-relaxed">
         <Globe className="w-3.5 h-3.5 text-primary flex-shrink-0" />
