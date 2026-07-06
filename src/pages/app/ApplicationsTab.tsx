@@ -102,7 +102,10 @@ export const ApplicationsTab = () => {
       </div>
 
       {/* Filters */}
-      <div className={`flex items-center gap-2 overflow-x-auto no-scrollbar ${isRtl ? "flex-row-reverse" : ""}`}>
+      <div
+        dir={isRtl ? "rtl" : "ltr"}
+        className={`flex items-center gap-2 overflow-x-auto no-scrollbar ${isRtl ? "justify-end" : "justify-start"}`}
+      >
         <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
         {(["all", ...STATUS_ORDER] as const).map((k) => {
           const active = filter === k;
