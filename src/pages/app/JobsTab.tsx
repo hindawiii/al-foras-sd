@@ -110,20 +110,21 @@ export const JobsTab = () => {
         <Switch checked={onlyMyCountry} onCheckedChange={setOnlyMyCountry} />
       </div>
 
-      {/* Categories */}
-      <div className="grid grid-cols-4 gap-2">
+      {/* Categories — compact single-row grid of 9 icons */}
+      <div className="grid grid-cols-9 gap-2">
         {JOB_CATEGORIES.map(c => {
-          const active = category === c.id;
+          const isActive = category === c.id;
           return (
             <button
               key={c.id}
               onClick={() => setCategory(c.id as any)}
-              className={`glass rounded-xl p-3 border transition-all flex flex-col items-center gap-1 ${
-                active ? "border-primary bg-primary/10" : "border-primary/15 hover:border-primary/40"
+              className={`glass rounded-lg p-2 border transition-all flex flex-col items-center gap-0.5 ${
+                isActive ? "border-primary bg-primary/10" : "border-primary/15 hover:border-primary/40"
               }`}
+              title={c.label}
             >
-              <span className="text-xl leading-none">{c.emoji}</span>
-              <span className={`text-[11px] font-medium ${active ? "text-primary" : "text-foreground"}`}>{c.label}</span>
+              <span className="text-[18px] leading-none" style={{ fontSize: 20 }}>{c.emoji}</span>
+              <span className={`text-[10px] font-medium leading-tight truncate w-full text-center ${isActive ? "text-primary" : "text-foreground"}`}>{c.label}</span>
             </button>
           );
         })}

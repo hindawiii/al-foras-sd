@@ -42,8 +42,15 @@ export const ScholarshipsTab = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    const t = setTimeout(() => setAiNotice(true), 4000);
-    return () => clearTimeout(t);
+    // Show once per session; auto-dismiss after 5s (per UX rule).
+    const dismissedKey = "aiNoticeDismissed";
+    if (sessionStorage.getItem(dismissedKey)) return;
+    const showT = setTimeout(() => setAiNotice(true), 1200);
+    const hideT = setTimeout(() => {
+      setAiNotice(false);
+      sessionStorage.setItem(dismissedKey, "1");
+    }, 1200 + 5000);
+    return () => { clearTimeout(showT); clearTimeout(hideT); };
   }, []);
 
   // Re-sort the deck when GPS resolves (only if user hasn't already swiped)
@@ -120,6 +127,29 @@ export const ScholarshipsTab = () => {
         </div>
       </div>
 
+      {/* AI matching notice — placed ABOVE the scholarship deck, below segmented filter */}
+      <AnimatePresence>
+        {aiNotice && (
+          <motion.div
+            initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }}
+            className="mx-1 mb-3 glass border-gold rounded-2xl p-3 flex items-start gap-3"
+          >
+            <div className="w-9 h-9 rounded-xl bg-gold-gradient flex items-center justify-center flex-shrink-0">
+              <span className="text-primary-foreground font-bold text-xs">AI</span>
+            </div>
+            <div className="flex-1">
+              <p className="text-xs text-primary font-bold mb-0.5">{t("aiMatchBadge")}</p>
+              <p className="text-sm text-foreground leading-snug">{t("aiMatchBody")}</p>
+            </div>
+            <button
+              onClick={() => { setAiNotice(false); sessionStorage.setItem("aiNoticeDismissed", "1"); }}
+              className="text-muted-foreground text-xs"
+              aria-label="إغلاق"
+            >✕</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Quick access cards: Sudan universities + Jobs */}
       <div className="grid grid-cols-2 gap-2.5 mb-3 mx-1">
         <button
@@ -165,26 +195,6 @@ export const ScholarshipsTab = () => {
         <Globe className="w-3.5 h-3.5 text-primary flex-shrink-0" />
         <span>{t("scholarshipsHint")}</span>
       </div>
-
-      <AnimatePresence>
-        {aiNotice && (
-          <motion.div
-            initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}
-            className="mx-1 mb-3 glass border-gold rounded-2xl p-3 flex items-start gap-3"
-          >
-            <div className="w-9 h-9 rounded-xl bg-gold-gradient flex items-center justify-center flex-shrink-0">
-              <span className="text-primary-foreground font-bold text-xs">AI</span>
-            </div>
-            <div className="flex-1">
-              <p className="text-xs text-primary font-bold mb-0.5">{t("aiMatchBadge")}</p>
-              <p className="text-sm text-foreground leading-snug">
-                {t("aiMatchBody")}
-              </p>
-            </div>
-            <button onClick={() => setAiNotice(false)} className="text-muted-foreground text-xs">✕</button>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <div className="relative flex-1">
         {deck.length === 0 ? (
