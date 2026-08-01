@@ -12,6 +12,7 @@ import { JobsTab } from "./JobsTab";
 import { useLiveNotifications } from "@/hooks/useLiveNotifications";
 import { useGeoSync } from "@/hooks/useGeoSync";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { notificationsStore } from "@/lib/notificationsStorage";
 
 const tabs = [
   { id: "scholarships" as const, key: "tabScholarships", icon: Award, comp: ScholarshipsTab },
@@ -25,6 +26,7 @@ export const AppShell = () => {
   const [tab, setTab] = useState<typeof tabs[number]["id"]>("scholarships");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
   const Active = tabs.find(t => t.id === tab)!.comp;
   useLiveNotifications();
   useGeoSync();
@@ -38,6 +40,13 @@ export const AppShell = () => {
     window.addEventListener("foras:navigate", onNav as EventListener);
     return () => window.removeEventListener("foras:navigate", onNav as EventListener);
   }, []);
+
+  useEffect(() => {
+    const refresh = () => setUnread(notificationsStore.unreadCount());
+    refresh();
+    const id = window.setInterval(refresh, 30_000);
+    return () => window.clearInterval(id);
+  }, [notifOpen, tab]);
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -58,7 +67,11 @@ export const AppShell = () => {
               className="relative w-11 h-11 rounded-xl bg-card border border-primary/20 hover:border-primary hover:bg-primary/10 transition-all flex items-center justify-center"
               aria-label="الإشعارات">
               <Bell className="w-5 h-5 text-primary" />
-              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-destructive ring-2 ring-card" />
+              {unread > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive ring-2 ring-card text-[10px] font-bold text-white flex items-center justify-center">
+                  {unread > 9 ? "9+" : unread}
+                </span>
+              )}
             </button>
             <button onClick={() => setSettingsOpen(true)}
               className="w-11 h-11 rounded-xl bg-card border border-primary/20 hover:border-primary hover:bg-primary/10 transition-all flex items-center justify-center"
