@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
-import { Sparkles, X, Send, Loader2, Trash2, Bot, GraduationCap, Calculator, University, FileText } from "lucide-react";
+import { Sparkles, X, Send, Loader2, Trash2, Bot, GraduationCap, Calculator, University, FileText, Mic } from "lucide-react";
 import { chatStorage, type ChatMessage } from "@/lib/aiChatStorage";
 import { guestStorage } from "@/lib/guestStorage";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ const QUICK_ACTIONS = [
   { icon: Calculator, label: "احسب نتيجتي المتوقعة", prompt: "أريد أن أحسب نتيجتي وأعرف تقديري. اسألني عن درجاتي في المواد الأساسية ثم احسب النسبة والتقدير." },
   { icon: University, label: "ما الجامعات المناسبة لي؟", prompt: "ما هي الجامعات السودانية والعربية المناسبة لملفي؟ صنّفها إلى: مضمونة القبول، تنافسية، وطموحة." },
   { icon: FileText, label: "كيف أُحسّن ملفي؟", prompt: "قيّم ملفي الشخصي واذكر نقاط القوة والضعف واقتراحات محددة للتحسين." },
+  { icon: Mic, label: "🎤 محاكاة مقابلة المنحة", prompt: "ابدأ الآن محاكاة مقابلة رسمية للمنحة الدراسية. اطرح عليّ سؤالًا واحدًا فقط في كل مرة، وانتظر جوابي، ثم قيّم جوابي من 10 مع ملاحظات تحسين قصيرة قبل السؤال التالي. اجعل الأسئلة واقعية (الدافع، الأهداف، نقاط القوة والضعف، لماذا هذه الدولة/الجامعة). بعد 5 أسئلة أعطني تقريرًا نهائيًا وتقديرًا عامًا." },
 ];
 
 const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-advisor`;
