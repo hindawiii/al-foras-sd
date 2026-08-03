@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Award, Newspaper, Bookmark, User, Settings as SettingsIcon, Bell, Languages, Briefcase } from "lucide-react";
+import { Award, Newspaper, Bookmark, User, Settings as SettingsIcon, Bell, Languages, Briefcase, GraduationCap } from "lucide-react";
 import { BrandMark } from "@/components/foras/Logo";
 import { SettingsSheet } from "@/components/foras/SettingsSheet";
 import { NotificationsSheet } from "@/components/foras/NotificationsSheet";
@@ -9,6 +9,7 @@ import { EconomyNewsTab } from "./EconomyNewsTab";
 import { ApplicationsTab } from "./ApplicationsTab";
 import { ProfileTab } from "./ProfileTab";
 import { JobsTab } from "./JobsTab";
+import { ArabUniversitiesTab } from "./ArabUniversitiesTab";
 import { useLiveNotifications } from "@/hooks/useLiveNotifications";
 import { useGeoSync } from "@/hooks/useGeoSync";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -18,6 +19,7 @@ const tabs = [
   { id: "scholarships" as const, key: "tabScholarships", icon: Award, comp: ScholarshipsTab },
   { id: "jobs" as const, key: "tabJobs", icon: Briefcase, comp: JobsTab },
   { id: "news" as const, key: "tabNews", icon: Newspaper, comp: EconomyNewsTab },
+  { id: "arabUnis" as const, key: "tabArabUnis", icon: GraduationCap, comp: ArabUniversitiesTab },
   { id: "applications" as const, key: "tabApplications", icon: Bookmark, comp: ApplicationsTab },
   { id: "profile" as const, key: "tabProfile", icon: User, comp: ProfileTab },
 ];
@@ -99,7 +101,7 @@ export const AppShell = () => {
         className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-md border-t border-primary/30"
         style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
       >
-        <div className="max-w-2xl mx-auto grid grid-cols-5">
+        <div className="max-w-2xl mx-auto grid grid-cols-6">
           {tabs.map(tabItem => {
             const Icon = tabItem.icon;
             const active = tab === tabItem.id;
