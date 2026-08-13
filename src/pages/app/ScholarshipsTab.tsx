@@ -386,3 +386,23 @@ const Detail = ({ icon: Icon, label, value }: { icon: React.ElementType; label: 
     <p className="text-foreground font-medium">{value}</p>
   </div>
 );
+
+const EmptyState = ({ t, onReload }: { t: (k: string) => string; onReload: () => void }) => (
+  <div className="h-full flex flex-col items-center justify-center text-center p-8">
+    <div className="w-24 h-24 rounded-3xl bg-card-gradient border-gold flex items-center justify-center mb-6">
+      <Award className="w-12 h-12 text-primary" strokeWidth={1.2} />
+    </div>
+    <h3 className="font-display text-2xl text-gold-gradient mb-2">{t("noScholarshipsCategory")}</h3>
+    <p className="text-muted-foreground mb-6">{t("noMoreScholarshipsDesc")}</p>
+    <Button variant="luxe" onClick={onReload}>{t("reload")}</Button>
+  </div>
+);
+
+const DetailUnused = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
+  <div className="bg-background/40 border border-border rounded-xl p-3">
+    <div className="flex items-center gap-1.5 text-muted-foreground text-xs mb-1">
+      <Icon className="w-3 h-3" />{label}
+    </div>
+    <p className="text-foreground font-medium">{value}</p>
+  </div>
+);
