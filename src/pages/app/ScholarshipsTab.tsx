@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { ExternalLink, BadgeCheck, Search, Award, MapPin, Clock, Link2, Share2, Sparkles, Globe, Star, GraduationCap, Briefcase, ArrowLeft } from "lucide-react";
+import { ExternalLink, BadgeCheck, Search, Award, MapPin, Clock, Link2, Share2, Sparkles, Globe, Star, GraduationCap, Briefcase, ArrowLeft, Layers, List, Heart, X } from "lucide-react";
 import { ScholarshipCard } from "@/components/foras/ScholarshipCard";
 import { UniversitiesGuide } from "@/components/foras/UniversitiesGuide";
 import { SCHOLARSHIPS, Scholarship, computeMatchScore } from "@/lib/mockData";
@@ -21,6 +21,7 @@ export const ScholarshipsTab = () => {
   const alignClass = isRtl ? "text-right" : "text-left";
 
   const [filter, setFilter] = useState<"arab" | "global">("arab");
+  const [viewMode, setViewMode] = useState<"deck" | "list">("deck");
 
   // Filter by category, then prioritise scholarships in user's country
   const orderedDeck = useMemo(() => {
