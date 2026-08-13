@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { ExternalLink, BadgeCheck, Search, Award, MapPin, Clock, Link2, Share2, Sparkles, Globe, Star, GraduationCap, Briefcase, ArrowLeft } from "lucide-react";
+import { ExternalLink, BadgeCheck, Search, Award, MapPin, Clock, Link2, Share2, Sparkles, Globe, Star, GraduationCap, Briefcase, ArrowLeft, Layers, List, Heart, X } from "lucide-react";
 import { ScholarshipCard } from "@/components/foras/ScholarshipCard";
 import { UniversitiesGuide } from "@/components/foras/UniversitiesGuide";
 import { SCHOLARSHIPS, Scholarship, computeMatchScore } from "@/lib/mockData";
@@ -21,6 +21,7 @@ export const ScholarshipsTab = () => {
   const alignClass = isRtl ? "text-right" : "text-left";
 
   const [filter, setFilter] = useState<"arab" | "global">("arab");
+  const [viewMode, setViewMode] = useState<"deck" | "list">("deck");
 
   // Filter by category, then prioritise scholarships in user's country
   const orderedDeck = useMemo(() => {
@@ -101,7 +102,7 @@ export const ScholarshipsTab = () => {
   };
 
   return (
-    <div className="relative h-[calc(100vh-180px)] flex flex-col">
+    <div className="relative flex flex-col min-h-[calc(100vh-180px)] overflow-y-auto overscroll-contain pb-4">
       {/* Segmented filter — Arab vs Global */}
       <div className="mb-3 px-1">
         <div className="relative inline-flex w-full p-1 rounded-2xl bg-card/60 backdrop-blur-md border border-border overflow-hidden">
@@ -196,16 +197,87 @@ export const ScholarshipsTab = () => {
         <span>{t("scholarshipsHint")}</span>
       </div>
 
-      <div className="relative flex-1">
+      {/* View mode toggle: swipe deck vs vertical scrollable list */}
+      <div className="mb-3 px-1 flex items-center gap-2">
+        {([
+          { key: "deck" as const, icon: Layers, label: isRtl ? "سحب" : "Swipe" },
+          { key: "list" as const, icon: List, label: isRtl ? "قائمة" : "List" },
+        ]).map(({ key, icon: Icon, label }) => (
+          <button
+            key={key}
+            onClick={() => setViewMode(key)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all
+              ${viewMode === key
+                ? "bg-primary/15 border-primary/50 text-primary"
+                : "bg-card/50 border-border text-muted-foreground hover:text-foreground"}`}
+          >
+            <Icon className="w-3.5 h-3.5" /> {label}
+          </button>
+        ))}
+        <span className={`text-[11px] text-muted-foreground ${isRtl ? "mr-auto" : "ml-auto"}`}>
+          {deck.length} {isRtl ? "فرصة" : "results"}
+        </span>
+      </div>
+
+      {viewMode === "list" ? (
+        <div className="flex flex-col gap-2.5 px-1">
+          {deck.length === 0 ? (
+            <EmptyState t={t} onReload={() => setDeck(orderedDeck)} />
+          ) : (
+            deck.map((s) => (
+              <motion.div
+                key={s.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={() => setDetail(s)}
+                className={`cursor-pointer rounded-2xl p-3.5 bg-card/50 backdrop-blur-md border transition-all hover:bg-primary/5
+                  ${s.category === "arab" ? "border-primary/30 hover:border-primary/60" : "border-[hsl(210_70%_60%/0.35)] hover:border-[hsl(210_70%_60%/0.7)]"} ${alignClass}`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-background/70 border border-primary/30 flex items-center justify-center text-xl flex-shrink-0">
+                    <span>{s.flag}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-primary text-xs font-extrabold truncate">{s.org}</p>
+                    <h4 className="text-sm font-bold text-foreground leading-snug line-clamp-2">{s.title}</h4>
+                    <div className="flex flex-wrap items-center gap-2 mt-1.5 text-[10px] text-muted-foreground">
+                      <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3 text-primary" />{s.country}</span>
+                      <span className="inline-flex items-center gap-1"><Award className="w-3 h-3 text-primary" />{s.amount}</span>
+                      <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3 text-primary" />
+                        {new Date(s.deadline).toLocaleDateString(isRtl ? "ar-EG" : "en-US")}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 flex-shrink-0">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/15 border border-primary/40 text-primary">
+                      <Sparkles className="w-3 h-3" />{computeMatchScore(s, profile)}%
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleSwipe("left", s); }}
+                        className="w-8 h-8 rounded-full border border-destructive/40 hover:bg-destructive/10 flex items-center justify-center"
+                        aria-label="dismiss"
+                      >
+                        <X className="w-3.5 h-3.5 text-destructive" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleSwipe("right", s); }}
+                        className="w-8 h-8 rounded-full bg-gold-gradient flex items-center justify-center shadow-gold"
+                        aria-label="save"
+                      >
+                        <Heart className="w-3.5 h-3.5 text-primary-foreground fill-current" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))
+          )}
+        </div>
+      ) : (
+      <div className="relative flex-1 min-h-[560px]">
         {deck.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-8">
-            <div className="w-24 h-24 rounded-3xl bg-card-gradient border-gold flex items-center justify-center mb-6">
-              <Award className="w-12 h-12 text-primary" strokeWidth={1.2} />
-            </div>
-            <h3 className="font-display text-2xl text-gold-gradient mb-2">{t("noScholarshipsCategory")}</h3>
-            <p className="text-muted-foreground mb-6">{t("noMoreScholarshipsDesc")}</p>
-            <Button variant="luxe" onClick={() => setDeck(orderedDeck)}>{t("reload")}</Button>
-          </div>
+          <EmptyState t={t} onReload={() => setDeck(orderedDeck)} />
         ) : (
           deck.slice(0, 3).map((s, i) => (
             <ScholarshipCard
@@ -220,10 +292,13 @@ export const ScholarshipsTab = () => {
           ))
         )}
       </div>
+      )}
 
-      <p className="text-center text-muted-foreground pt-3 my-[10px] text-xs">
-        {t("swipeHint")}
-      </p>
+      {viewMode === "deck" && (
+        <p className="text-center text-muted-foreground pt-3 my-[10px] text-xs">
+          {t("swipeHint")}
+        </p>
+      )}
 
       <Sheet open={!!detail} onOpenChange={(v) => !v && setDetail(null)}>
         <SheetContent side="bottom" className="bg-card border-gold/30 rounded-t-3xl max-h-[92vh] overflow-y-auto">
@@ -309,5 +384,16 @@ const Detail = ({ icon: Icon, label, value }: { icon: React.ElementType; label: 
       <Icon className="w-3 h-3" />{label}
     </div>
     <p className="text-foreground font-medium">{value}</p>
+  </div>
+);
+
+const EmptyState = ({ t, onReload }: { t: (k: string) => string; onReload: () => void }) => (
+  <div className="h-full flex flex-col items-center justify-center text-center p-8">
+    <div className="w-24 h-24 rounded-3xl bg-card-gradient border-gold flex items-center justify-center mb-6">
+      <Award className="w-12 h-12 text-primary" strokeWidth={1.2} />
+    </div>
+    <h3 className="font-display text-2xl text-gold-gradient mb-2">{t("noScholarshipsCategory")}</h3>
+    <p className="text-muted-foreground mb-6">{t("noMoreScholarshipsDesc")}</p>
+    <Button variant="luxe" onClick={onReload}>{t("reload")}</Button>
   </div>
 );
