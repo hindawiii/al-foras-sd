@@ -102,7 +102,7 @@ export const ScholarshipsTab = () => {
   };
 
   return (
-    <div className="relative h-[calc(100vh-180px)] flex flex-col">
+    <div className="relative flex flex-col min-h-[calc(100vh-180px)] overflow-y-auto overscroll-contain pb-4">
       {/* Segmented filter — Arab vs Global */}
       <div className="mb-3 px-1">
         <div className="relative inline-flex w-full p-1 rounded-2xl bg-card/60 backdrop-blur-md border border-border overflow-hidden">
