@@ -397,12 +397,3 @@ const EmptyState = ({ t, onReload }: { t: (k: string) => string; onReload: () =>
     <Button variant="luxe" onClick={onReload}>{t("reload")}</Button>
   </div>
 );
-
-const DetailUnused = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
-  <div className="bg-background/40 border border-border rounded-xl p-3">
-    <div className="flex items-center gap-1.5 text-muted-foreground text-xs mb-1">
-      <Icon className="w-3 h-3" />{label}
-    </div>
-    <p className="text-foreground font-medium">{value}</p>
-  </div>
-);
