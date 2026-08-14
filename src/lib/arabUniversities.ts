@@ -64,3 +64,101 @@ export const ARAB_COUNTRIES = Array.from(
 export const ARAB_FACULTIES = Array.from(
   new Set(ARAB_UNIVERSITIES.flatMap((u) => u.faculties))
 ).sort();
+
+/* ------------------------------------------------------------------ */
+/* تفاصيل موسّعة: تُشتقّ من الدولة ونوع الجامعة (بيانات إرشادية)        */
+/* ------------------------------------------------------------------ */
+
+export interface ArabUniDetails {
+  tuition: string;
+  tuitionEn: string;
+  living: string;
+  livingEn: string;
+  seasons: string;
+  seasonsEn: string;
+  docs: string[];
+  docsEn: string[];
+  steps: string[];
+  stepsEn: string[];
+}
+
+/** تحويل علم الدولة (Regional Indicators) إلى رمز ISO مثل EG / SA */
+export const flagToCode = (flag: string): string =>
+  Array.from(flag)
+    .map((ch) => ch.codePointAt(0) ?? 0)
+    .filter((cp) => cp >= 0x1f1e6 && cp <= 0x1f1ff)
+    .map((cp) => String.fromCharCode(cp - 0x1f1e6 + 65))
+    .join("");
+
+const GULF = ["السعودية", "الإمارات", "قطر", "الكويت", "عُمان", "البحرين"];
+const LEVANT = ["الأردن", "لبنان", "سوريا", "فلسطين", "العراق"];
+
+const tuitionRange = (u: ArabUniversity): [number, number] => {
+  const gulf = GULF.includes(u.country);
+  const levant = LEVANT.includes(u.country);
+  if (u.type === "private") return gulf ? [8000, 22000] : levant ? [4000, 12000] : [2500, 9000];
+  return gulf ? [0, 6000] : levant ? [1500, 6000] : [800, 4000];
+};
+
+const livingRange = (u: ArabUniversity): [number, number] => {
+  const gulf = GULF.includes(u.country);
+  const levant = LEVANT.includes(u.country);
+  return gulf ? [500, 900] : levant ? [300, 550] : [180, 400];
+};
+
+export const getUniDetails = (u: ArabUniversity): ArabUniDetails => {
+  const [t1, t2] = tuitionRange(u);
+  const [l1, l2] = livingRange(u);
+  const fmt = (a: number, b: number) => `${a.toLocaleString()} – ${b.toLocaleString()}`;
+  return {
+    tuition: `${fmt(t1, t2)} دولار / سنة`,
+    tuitionEn: `$${fmt(t1, t2)} / year`,
+    living: `${fmt(l1, l2)} دولار / شهر`,
+    livingEn: `$${fmt(l1, l2)} / month`,
+    seasons: "التقديم الرئيسي: يونيو – سبتمبر · تقديم تكميلي محدود في يناير",
+    seasonsEn: "Main intake: June – September · limited spring intake in January",
+    docs: [
+      "شهادة الثانوية مصدّقة + كشف الدرجات",
+      "جواز سفر ساري لمدة سنة على الأقل",
+      "شهادة ميلاد مترجمة ومصدّقة",
+      "صور شخصية بخلفية بيضاء",
+      u.language === "en" ? "إثبات لغة إنجليزية (IELTS/TOEFL) إن طُلب" : "إثبات لغة عند الدراسة بالإنجليزية",
+      "تقرير طبي / فحص لياقة صحية",
+    ],
+    docsEn: [
+      "Attested high-school certificate + transcript",
+      "Passport valid for at least one year",
+      "Translated and attested birth certificate",
+      "Passport-size photos, white background",
+      u.language === "en" ? "English proof (IELTS/TOEFL) if required" : "Language proof for English-taught tracks",
+      "Medical report / health fitness check",
+    ],
+    steps: [
+      "تحقّق من شروط القبول للطلاب الوافدين على الموقع الرسمي",
+      "جهّز المستندات وصدّقها من وزارة الخارجية والسفارة",
+      "أنشئ حساباً في بوابة القبول الإلكترونية وارفع الملفات",
+      "سدّد رسوم التقديم واحفظ إيصال الدفع",
+      "تابع البريد الإلكتروني لخطاب القبول المبدئي",
+      "بعد القبول: استخرج تأشيرة الدراسة وسجّل المقررات",
+    ],
+    stepsEn: [
+      "Check international-student requirements on the official site",
+      "Prepare and attest documents (MoFA + embassy)",
+      "Create an account on the admission portal and upload files",
+      "Pay the application fee and keep the receipt",
+      "Watch your email for the conditional offer letter",
+      "After acceptance: obtain the study visa and register courses",
+    ],
+  };
+};
+
+export const ARAB_COUNTRY_STATS = ARAB_COUNTRIES.map((c) => {
+  const unis = ARAB_UNIVERSITIES.filter((u) => u.country === c.country);
+  return {
+    ...c,
+    code: flagToCode(c.flag),
+    count: unis.length,
+    minPercentage: Math.min(...unis.map((u) => u.minPercentage)),
+    scholarships: unis.some((u) => u.scholarships),
+  };
+});
