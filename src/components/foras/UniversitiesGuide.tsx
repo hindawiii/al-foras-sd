@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, MapPin, ExternalLink, Search, Building2, Filter, Sparkles, Target } from "lucide-react";
+import {
+  GraduationCap, MapPin, ExternalLink, Search, Building2, Filter, Sparkles, Target,
+  Info, Wallet, Home, CalendarDays, FileText, ListChecks, Users, Quote, Map as MapIcon,
+} from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +11,7 @@ import {
   SUDAN_UNIVERSITIES,
   CITY_LIST,
   FACULTY_LIST,
+  getSudanUniDetails,
   type SudanUniversity,
   type UniType,
 } from "@/lib/sudanUniversities";
@@ -40,6 +44,7 @@ export const UniversitiesGuide = ({ open, onOpenChange, userPercentage }: Props)
   const [type, setType] = useState<UniType | "">("");
   const [pctInput, setPctInput] = useState<string>("");
   const [onlyEligible, setOnlyEligible] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   // Load saved percentage once (or fallback to prop)
   useEffect(() => {
