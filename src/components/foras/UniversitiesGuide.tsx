@@ -388,7 +388,7 @@ export const UniversitiesGuide = ({ open, onOpenChange, userPercentage }: Props)
                         target="_blank" rel="noopener noreferrer"
                         className="h-10 rounded-xl border border-primary/30 bg-background/60 text-primary text-[11px] font-bold flex items-center justify-center gap-1.5"
                       >
-                        <Map className="w-3.5 h-3.5" /> الموقع على الخريطة
+                        <MapIcon className="w-3.5 h-3.5" /> الموقع على الخريطة
                       </a>
                     </div>
                   );
