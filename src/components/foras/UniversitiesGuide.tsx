@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, MapPin, ExternalLink, Search, Building2, Filter, Sparkles, Target } from "lucide-react";
+import {
+  GraduationCap, MapPin, ExternalLink, Search, Building2, Filter, Sparkles, Target,
+  Info, Wallet, Home, CalendarDays, FileText, ListChecks, Users, Quote, Map as MapIcon,
+} from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +11,7 @@ import {
   SUDAN_UNIVERSITIES,
   CITY_LIST,
   FACULTY_LIST,
+  getSudanUniDetails,
   type SudanUniversity,
   type UniType,
 } from "@/lib/sudanUniversities";
@@ -40,6 +44,7 @@ export const UniversitiesGuide = ({ open, onOpenChange, userPercentage }: Props)
   const [type, setType] = useState<UniType | "">("");
   const [pctInput, setPctInput] = useState<string>("");
   const [onlyEligible, setOnlyEligible] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   // Load saved percentage once (or fallback to prop)
   useEffect(() => {
@@ -302,6 +307,92 @@ export const UniversitiesGuide = ({ open, onOpenChange, userPercentage }: Props)
                     </a>
                   </Button>
                 </div>
+
+                <button
+                  onClick={() => setExpanded(expanded === u.id ? null : u.id)}
+                  className="mt-2.5 w-full h-9 rounded-xl border border-primary/25 bg-primary/5 text-primary text-[11px] font-bold flex items-center justify-center gap-1.5"
+                >
+                  <Info className="w-3.5 h-3.5" />
+                  {expanded === u.id ? "إخفاء التفاصيل" : "تفاصيل كاملة: الرسوم والتقديم والخريجون"}
+                </button>
+
+                {expanded === u.id && (() => {
+                  const d = getSudanUniDetails(u);
+                  return (
+                    <div className="mt-3 space-y-3 text-right border-t border-border/60 pt-3">
+                      <div className="grid grid-cols-1 gap-2">
+                        <div className="rounded-xl border border-primary/15 bg-background/60 p-3">
+                          <p className="text-[10px] text-muted-foreground flex items-center justify-end gap-1">
+                            الرسوم الدراسية <Wallet className="w-3 h-3 text-primary" />
+                          </p>
+                          <p className="text-[11px] text-foreground/90 mt-1 leading-relaxed">{d.tuition}</p>
+                        </div>
+                        <div className="rounded-xl border border-primary/15 bg-background/60 p-3">
+                          <p className="text-[10px] text-muted-foreground flex items-center justify-end gap-1">
+                            تكلفة المعيشة <Home className="w-3 h-3 text-primary" />
+                          </p>
+                          <p className="text-[11px] text-foreground/90 mt-1 leading-relaxed">{d.living}</p>
+                        </div>
+                        <div className="rounded-xl border border-primary/15 bg-background/60 p-3">
+                          <p className="text-[10px] text-muted-foreground flex items-center justify-end gap-1">
+                            مواعيد القبول <CalendarDays className="w-3 h-3 text-primary" />
+                          </p>
+                          <p className="text-[11px] text-foreground/90 mt-1 leading-relaxed">{d.seasons}</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-[11px] font-bold text-foreground flex items-center justify-end gap-1.5 mb-1.5">
+                          المستندات المطلوبة <FileText className="w-3.5 h-3.5 text-primary" />
+                        </p>
+                        <ul className="space-y-1">
+                          {d.docs.map((doc) => (
+                            <li key={doc} className="text-[11px] text-muted-foreground">• {doc}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <p className="text-[11px] font-bold text-foreground flex items-center justify-end gap-1.5 mb-1.5">
+                          خطوات التقديم <ListChecks className="w-3.5 h-3.5 text-primary" />
+                        </p>
+                        <ol className="space-y-1">
+                          {d.steps.map((s, idx) => (
+                            <li key={s} className="text-[11px] text-muted-foreground">
+                              <span className="text-primary font-bold">{idx + 1}.</span> {s}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+
+                      <div>
+                        <p className="text-[11px] font-bold text-foreground flex items-center justify-end gap-1.5 mb-1.5">
+                          أبرز الخريجين <Users className="w-3.5 h-3.5 text-primary" />
+                        </p>
+                        <ul className="space-y-1">
+                          {d.alumni.map((a) => (
+                            <li key={a} className="text-[11px] text-muted-foreground">• {a}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
+                        <p className="text-[11px] font-bold text-primary flex items-center justify-end gap-1.5 mb-1">
+                          تجربة الطلاب <Quote className="w-3.5 h-3.5" />
+                        </p>
+                        <p className="text-[11px] text-foreground/90 leading-relaxed">{d.experience}</p>
+                      </div>
+
+                      <a
+                        href={`https://www.google.com/maps/search/${encodeURIComponent(`${u.nameEn} ${u.city} Sudan`)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="h-10 rounded-xl border border-primary/30 bg-background/60 text-primary text-[11px] font-bold flex items-center justify-center gap-1.5"
+                      >
+                        <MapIcon className="w-3.5 h-3.5" /> الموقع على الخريطة
+                      </a>
+                    </div>
+                  );
+                })()}
               </motion.div>
             );
           })}
